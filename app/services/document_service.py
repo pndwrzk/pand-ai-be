@@ -151,16 +151,30 @@ class DocumentService:
         
         splitter = Splitter()
         chunks = splitter.split(file_content.content)
+        file = self.file_repository.find_by_id(file_content.file_id)
+        
+        if file is None:
+            print(
+                f"File {file_content.file_id} not found"
+            )
+            return
+        
+        if file.key is None:
+            print(
+                f"File {file_content.file_id} has no key"
+            )
+            return
 
         documents = [
             Document(   
                 page_content=chunk,
                 metadata={
                     "file_id": file_content.file_id,
-                    "file_content_id": file_content.id,
-                    "page_number": file_content.page_number,
-                    "chunk_number": i,
-                },
+                "file_content_id": file_content.id,
+                "file_key": file.key,
+                "page_number": file_content.page_number,
+                "chunk_number": i,
+                    },
             )
             for i, chunk in enumerate(chunks)
         ]

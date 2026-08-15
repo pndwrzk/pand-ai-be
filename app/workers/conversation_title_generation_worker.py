@@ -12,6 +12,7 @@ from app.messaging.queues import Queue
 from app.repositories.vector_repository import VectorRepository
 from app.services.conversation_service import ConversationService
 from app.services.llm_service import LLMService
+from app.services.storage_service import StorageService
 
 
 def create_conversation_service():
@@ -23,6 +24,7 @@ def create_conversation_service():
         llm_service=LLMService(),
         publisher=Publisher(RabbitMQ()),
         vector_repository=VectorRepository(qdrant=Qdrant()),
+        storage_service=StorageService()
     )
 
 

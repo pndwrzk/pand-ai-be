@@ -93,17 +93,25 @@ def get_vector_repository(
     )
 
 
+
+def get_storage_service():
+    return StorageService()
+
+
+
 def get_conversation_service(
     repository: ConversationRepository = Depends(get_conversation_repository),
     llm_service: LLMService = Depends(get_llm_service),
     publisher: Publisher = Depends(get_publisher),
     vector_repository: VectorRepository = Depends(get_vector_repository),
+    storage_service: StorageService = Depends(get_storage_service)
 ):
     return ConversationService(
         conversation_repository=repository,
         llm_service=llm_service,
         publisher=publisher,
-        vector_repository=vector_repository
+        vector_repository=vector_repository,
+        storage_service=storage_service,
     )
 
 def get_module_repository(
@@ -118,10 +126,6 @@ def get_module_service(
     return ModuleService(repository)
 
 
-
-
-def get_storage_service():
-    return StorageService()
 
 
 

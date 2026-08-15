@@ -21,7 +21,7 @@ router = APIRouter(
 @router.get("/modules/{module_id}/files")
 def get_files_by_module_id(
     module_id: UUID,
- #   current_user=Depends(get_current_user),
+   _=Depends(get_current_user),
     service: FileService = Depends(get_file_service),
 ):
     files = service.get_by_module_id(
@@ -38,7 +38,7 @@ def get_files_by_module_id(
 def create_file(
     module_id: UUID,
     request: CreateFileRequest,
-   # current_user=Depends(get_current_user),
+   _=Depends(get_current_user),
     service: FileService = Depends(get_file_service),
 ):
     file = service.create(
@@ -54,7 +54,7 @@ def create_file(
 @router.get("/files/{file_id}")
 def get_file_detail(
     file_id: UUID,
-   # current_user=Depends(get_current_user),
+   _=Depends(get_current_user),
     service: FileService = Depends(get_file_service),
 ):
 
@@ -73,7 +73,7 @@ def get_file_detail(
 def update_file_content(
     file_content_id: UUID,
     request: UpdateContentFileRequest,
-   # current_user=Depends(get_current_user),
+   _=Depends(get_current_user),
     service: FileService = Depends(get_file_service),
 ):
     file_content = service.update_content(
@@ -107,7 +107,7 @@ def update_file_status_approve(
 @router.delete("/modules/{module_id}/files/{file_id}")
 def delete_file(
     file_id: UUID,
-   # current_user=Depends(get_current_user),
+   _=Depends(get_current_user),
     service: FileService = Depends(get_file_service),
 ):
     service.delete_by_file_id(

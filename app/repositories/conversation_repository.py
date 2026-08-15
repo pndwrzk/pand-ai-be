@@ -35,12 +35,27 @@ class ConversationRepository:
         return conversation
     
     
-    def get_all_conversation(self):
-        return (
+    def get_all_conversation(self, page: int = 1, per_page: int = 10):
+        offset = (page - 1) * per_page
+
+        conversations = (
             self.db.query(Conversation)
             .order_by(Conversation.created_at.desc())
+            .offset(offset)
+            .limit(per_page)
             .all()
         )
+
+        total_data = self.db.query(Conversation).count()
+
+        return {
+            "items": conversations,
+            "meta": {
+                "page": page,
+                "per_page": per_page,
+                "total_data": total_data,
+            },
+        }
     
     def get_conversation_by_id(self, conversation_id: str):
         return self.db.query(Conversation).filter(Conversation.id == conversation_id).first()

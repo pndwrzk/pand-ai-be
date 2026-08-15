@@ -21,7 +21,7 @@ router = APIRouter(
 
 @router.get("")
 def get_modules(
-    # user=Depends(get_current_user),
+    _=Depends(get_current_user),
     service: ModuleService = Depends(get_module_service),
 ):
 
@@ -53,7 +53,7 @@ def create_module(
 @router.get("/{id}")
 def get_module(
     id: UUID,
-    # user=Depends(get_current_user),
+    _=Depends(get_current_user),
     service: ModuleService = Depends(get_module_service),
 ):
 
@@ -70,7 +70,7 @@ def get_module(
 def update_module(
     id: UUID,
     request: UpdateModuleRequest,
-    # user=Depends(get_current_user),
+    _=Depends(get_current_user),
     service: ModuleService = Depends(get_module_service),
 ):
 
@@ -89,7 +89,7 @@ def update_module(
 @router.delete("/{id}")
 def delete_module(
     id: UUID,
-    # user=Depends(get_current_user),
+    _=Depends(get_current_user),
     service: ModuleService = Depends(get_module_service),
 ):
 

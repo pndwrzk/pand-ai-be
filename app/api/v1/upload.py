@@ -15,7 +15,7 @@ router = APIRouter(
 @router.post("/presign")
 def presign(
     request: PresignRequest,
-    #_: dict = Depends(get_current_user),
+    _: dict = Depends(get_current_user),
     storage_service: StorageService = Depends(get_storage_service),
 ):
     result = storage_service.generate_presigned_upload(

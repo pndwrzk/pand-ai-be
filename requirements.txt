@@ -26,4 +26,4 @@ langchain-qdrant
 langchain-text-splitters
 langchain_groq
 
- sentence-transformers
+sentence-transformers

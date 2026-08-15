@@ -47,12 +47,15 @@ class Extractor:
 
         results = []
 
-        for page_number, page in enumerate(
-            document,
-            start=1,
+        for page_number in range(
+            1,
+            len(document) + 1,
         ):
+            page = document[page_number - 1]
 
             text = page.get_text()
+            if not isinstance(text, str):
+                text = str(text) if text is not None else ""
 
             if not text.strip():
 
@@ -69,7 +72,7 @@ class Extractor:
 
                 text = pytesseract.image_to_string(
                     image,
-                    lang="eng",
+                    lang="ind+eng",
                 )
 
             results.append(
@@ -94,7 +97,7 @@ class Extractor:
 
         text = pytesseract.image_to_string(
             image,
-            lang="eng",
+            lang="ind+eng",
         )
 
         return [

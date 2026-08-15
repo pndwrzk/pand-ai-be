@@ -107,5 +107,10 @@ class StorageService:
             Bucket=settings.S3_BUCKET_NAME,
             Key=key,
         )
+        
+    def get_by_name_by_key(self, key: str) -> str:
+        return key.split("/")[-1]
+        
+        
     
   

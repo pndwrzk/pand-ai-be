@@ -20,11 +20,15 @@ def format_sse(payload: dict) -> str:
     return f"data: {json.dumps(payload, default=str)}\n\n"
 
 
-def stream_response(generator):
+def stream_response(generator, chunk_size: int = 32):
     try:
         while True:
             chunk = next(generator)
-            yield format_sse({"delta": serialize_for_json(chunk)})
+            if isinstance(chunk, str):
+                for i in range(0, len(chunk), chunk_size):
+                    yield format_sse({"delta": chunk[i:i + chunk_size]})
+            else:
+                yield format_sse({"delta": serialize_for_json(chunk)})
     except StopIteration as exc:
         yield format_sse({"event": "done", "payload": serialize_for_json(exc.value)})
     except ValueError as exc:
