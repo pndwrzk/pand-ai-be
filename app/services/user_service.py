@@ -4,6 +4,7 @@ from app.core.security import hash_password
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
 from app.schemas.requests.create_user_request import CreateUserRequest
+from app.schemas.user import UserCreate
 from app.exceptions import ConflictException
 
 class UserService:
@@ -25,7 +26,7 @@ class UserService:
             )
 
    
-        user = User(
+        user = UserCreate(
             email=dto.email,
             username=dto.username,
             full_name=dto.full_name,

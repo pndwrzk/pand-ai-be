@@ -5,10 +5,10 @@ from sqlalchemy import DateTime, ForeignKey, Integer, Text
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.base import Base
+from app.db.base import AuditMixin, Base
 
 
-class ConversationMessage(Base):
+class ConversationMessage(AuditMixin, Base):
     __tablename__ = "conversation_messages"
 
     id: Mapped[UUID] = mapped_column(
@@ -31,6 +31,20 @@ class ConversationMessage(Base):
     content: Mapped[str] = mapped_column(
         Text,
         nullable=False,
+    )
+
+    created_by: Mapped[UUID | None] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+
+    updated_by: Mapped[UUID | None] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
     )
 
     created_at: Mapped[datetime] = mapped_column(

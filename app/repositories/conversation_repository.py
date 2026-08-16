@@ -4,6 +4,7 @@ from uuid import UUID
 
 from sqlalchemy.orm import joinedload
 
+from app.db.base import _current_user_id
 from app.models import conversation_message
 from app.models.conversation import Conversation
 from app.models.conversation_message import ConversationMessage
@@ -37,16 +38,20 @@ class ConversationRepository:
     
     def get_all_conversation(self, page: int = 1, per_page: int = 10):
         offset = (page - 1) * per_page
+        
+        # Get current user from context
+        current_user_id = _current_user_id.get()
 
         conversations = (
             self.db.query(Conversation)
+            .filter(Conversation.created_by == current_user_id)
             .order_by(Conversation.created_at.desc())
             .offset(offset)
             .limit(per_page)
             .all()
         )
 
-        total_data = self.db.query(Conversation).count()
+        total_data = self.db.query(Conversation).filter(Conversation.created_by == current_user_id).count()
 
         return {
             "items": conversations,
@@ -58,13 +63,21 @@ class ConversationRepository:
         }
     
     def get_conversation_by_id(self, conversation_id: str):
-        return self.db.query(Conversation).filter(Conversation.id == conversation_id).first()
+        current_user_id = _current_user_id.get()
+        return self.db.query(Conversation).filter(
+            Conversation.id == conversation_id,
+            Conversation.created_by == current_user_id
+        ).first()
     
     def get_conversation_detail_by_id(self, conversation_id: str):
+        current_user_id = _current_user_id.get()
         return (
         self.db.query(Conversation)
         .options(joinedload(Conversation.messages))
-        .filter(Conversation.id == conversation_id)
+        .filter(
+            Conversation.id == conversation_id,
+            Conversation.created_by == current_user_id
+        )
         .first()
     )
     

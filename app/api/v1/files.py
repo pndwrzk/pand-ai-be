@@ -5,7 +5,6 @@ from app.schemas.requests.update_content_file_request import UpdateContentFileRe
 from fastapi import APIRouter, Depends
 
 from app.common.response import ApiResponse
-from app.core.auth import get_current_user
 from app.core.dependency import get_file_service
 from app.schemas.requests.create_file_request import CreateFileRequest
 from app.schemas.responses.file_response import FileContentResponse, FileResponse, FileWithFileContentAndVectorInfoResponse
@@ -18,10 +17,9 @@ router = APIRouter(
 
 
 
-@router.get("/modules/{module_id}/files")
+@router.get("/internal/modules/{module_id}/files")
 def get_files_by_module_id(
     module_id: UUID,
-   _=Depends(get_current_user),
     service: FileService = Depends(get_file_service),
 ):
     files = service.get_by_module_id(
@@ -34,11 +32,10 @@ def get_files_by_module_id(
     )
 
 
-@router.post("/modules/{module_id}/files")
+@router.post("/internal/modules/{module_id}/files")
 def create_file(
     module_id: UUID,
     request: CreateFileRequest,
-   _=Depends(get_current_user),
     service: FileService = Depends(get_file_service),
 ):
     file = service.create(
@@ -51,10 +48,9 @@ def create_file(
         data=FileResponse.model_validate(file),
     )
 
-@router.get("/files/{file_id}")
+@router.get("/internal/files/{file_id}")
 def get_file_detail(
     file_id: UUID,
-   _=Depends(get_current_user),
     service: FileService = Depends(get_file_service),
 ):
 
@@ -69,11 +65,10 @@ def get_file_detail(
         ),
     )
 
-@router.patch("/files/content/{file_content_id}")
+@router.patch("/internal/files/content/{file_content_id}")
 def update_file_content(
     file_content_id: UUID,
     request: UpdateContentFileRequest,
-   _=Depends(get_current_user),
     service: FileService = Depends(get_file_service),
 ):
     file_content = service.update_content(
@@ -88,7 +83,7 @@ def update_file_content(
         ),
     )
 
-@router.patch("/files/content/{file_content_id}/status")
+@router.patch("/internal/files/content/{file_content_id}/status")
 def update_file_status_approve(
     file_content_id: UUID,
     request: UpdateStatusFileContentRequest,
@@ -104,10 +99,9 @@ def update_file_status_approve(
         message="File status updated successfully",
     )
 
-@router.delete("/modules/{module_id}/files/{file_id}")
+@router.delete("/internal/modules/{module_id}/files/{file_id}")
 def delete_file(
     file_id: UUID,
-   _=Depends(get_current_user),
     service: FileService = Depends(get_file_service),
 ):
     service.delete_by_file_id(

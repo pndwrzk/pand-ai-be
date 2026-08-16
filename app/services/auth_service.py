@@ -15,7 +15,7 @@ class AuthService:
     def __init__(self, repository: UserRepository):
         self.repository = repository
 
-    def login(self, dto: LoginRequest) -> LoginResponse:
+    def login(self, dto: LoginRequest, entry_point: int) -> LoginResponse:
 
         user = self.repository.find_by_email(dto.email)
 
@@ -30,10 +30,13 @@ class AuthService:
             )
 
         token = create_access_token(
-            {"sub": str(user.id)}
+            {"sub": str(user.id)},
+            entry_point=entry_point
         )
 
         return LoginResponse(
             access_token=token,
             token_type="Bearer",
         )
+        
+   

@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from app.constants.entry_point import EntryPoint
 
 from jose import jwt
 from passlib.context import CryptContext
@@ -30,17 +31,27 @@ def verify_password(
     )
 
 
+def _get_jwt_config(entry_point: int) -> tuple[str, int]:
+   
+    if entry_point == EntryPoint.APP:
+        return settings.JWT_SECRET_APP, settings.ACCESS_TOKEN_EXPIRE_MINUTES_APP
+    else:
+        return settings.JWT_SECRET_INTERNAL, settings.ACCESS_TOKEN_EXPIRE_MINUTES_INTERNAL
+
+
 def create_access_token(
     data: dict,
     expires_minutes: int | None = None,
+    entry_point: int = EntryPoint.INTERNAL,
 ) -> str:
 
     to_encode = data.copy()
+    secret_key, default_expires_minutes = _get_jwt_config(entry_point)
 
     expire_minutes = (
         expires_minutes
         if expires_minutes is not None
-        else settings.ACCESS_TOKEN_EXPIRE_MINUTES
+        else default_expires_minutes
     )
 
     expire = datetime.now(timezone.utc) + timedelta(
@@ -49,27 +60,28 @@ def create_access_token(
 
     to_encode.update(
         {
-            "exp": expire
+            "exp": expire,
+            "entry_point": entry_point,
         }
     )
 
     return jwt.encode(
         to_encode,
-        settings.JWT_SECRET,
+        secret_key,
         algorithm=settings.ALGORITHM,
     )
 
 
 def decode_access_token(
     token: str,
+    entry_point: int = EntryPoint.INTERNAL ,
 ) -> dict:
-    """
-    Decode dan validate JWT token
-    """
+   
+    secret_key, _ = _get_jwt_config(entry_point)
 
     return jwt.decode(
         token,
-        settings.JWT_SECRET,
+        secret_key,
         algorithms=[
             settings.ALGORITHM
         ],

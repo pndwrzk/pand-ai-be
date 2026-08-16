@@ -1,11 +1,9 @@
 
-
 from fastapi import APIRouter, Depends, Query
 from fastapi.responses import StreamingResponse
 
 from app.common.response import ApiResponse
 from app.common.streaming import stream_response
-from app.core.auth import get_current_user
 from app.core.dependency import get_conversation_service
 from app.schemas.requests.create_conversation_request import CreateConversationRequest
 from app.schemas.responses.conversation_response import CreateConversationResponse, GetConversationsResponse
@@ -19,12 +17,11 @@ router = APIRouter(prefix="/conversations", tags=["Conversations"])
 @router.post("")
 def create_conversation(
     request: CreateConversationRequest,
-     _=Depends(get_current_user),
     service: ConversationService = Depends(get_conversation_service),
 ):
     response = service.create_conversation(request)
     return ApiResponse.success(
-            message="File content updated successfully",
+            message="Conversation created successfully",
             data=CreateConversationResponse.model_validate(
                 response
             ),
@@ -35,7 +32,6 @@ def create_conversation(
 def create_conversation_message(
     conversation_id: str,
     request: CreateConversationRequest,
-    _=Depends(get_current_user),
     service: ConversationService = Depends(get_conversation_service),
 ):
     generator = service.reply_conversation_stream(conversation_id, request.message)
@@ -46,7 +42,6 @@ def create_conversation_message(
 def get_conversation_history(
     page: int = Query(1, ge=1),
     per_page: int = Query(10, ge=1, le=100),
-    _=Depends(get_current_user),
     service: ConversationService = Depends(get_conversation_service),
 ):
     response = service.get_conversations(page=page, per_page=per_page)

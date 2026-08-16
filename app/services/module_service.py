@@ -57,32 +57,26 @@ class ModuleService:
                 "Module already exists"
             )
 
-
         module = Module(
             name=dto.name,
             description=dto.description,
         )
 
-        return self.repository.create(
-            module
-        )
+        return self.repository.create(module)
 
 
     def update(
         self,
         id: UUID,
-        dto:UpdateModuleRequest
+        dto: UpdateModuleRequest
     ):
 
         module = self.get_by_id(id)
 
-     
         module.name = dto.name
         module.description = dto.description
 
-        return self.repository.update(
-            module
-        )
+        return self.repository.update(module)
 
 
     def delete(

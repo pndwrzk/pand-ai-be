@@ -2,7 +2,6 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from app.core.auth import get_current_user
 from app.core.dependency import get_module_service
 
 from app.services.module_service import ModuleService
@@ -14,14 +13,13 @@ from app.common.response import ApiResponse
 
 
 router = APIRouter(
-    prefix="/modules",
+    prefix="/internal/modules",
     tags=["Modules"]
 )
 
 
 @router.get("")
 def get_modules(
-    _=Depends(get_current_user),
     service: ModuleService = Depends(get_module_service),
 ):
 
@@ -37,7 +35,6 @@ def get_modules(
 @router.post("")
 def create_module(
     request: CreateModuleRequest,
-   # user=Depends(get_current_user),
     service: ModuleService = Depends(get_module_service),
 ):
 
@@ -53,7 +50,6 @@ def create_module(
 @router.get("/{id}")
 def get_module(
     id: UUID,
-    _=Depends(get_current_user),
     service: ModuleService = Depends(get_module_service),
 ):
 
@@ -70,7 +66,6 @@ def get_module(
 def update_module(
     id: UUID,
     request: UpdateModuleRequest,
-    _=Depends(get_current_user),
     service: ModuleService = Depends(get_module_service),
 ):
 
@@ -89,7 +84,6 @@ def update_module(
 @router.delete("/{id}")
 def delete_module(
     id: UUID,
-    _=Depends(get_current_user),
     service: ModuleService = Depends(get_module_service),
 ):
 
