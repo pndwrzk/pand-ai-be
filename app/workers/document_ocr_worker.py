@@ -14,6 +14,7 @@ from app.messaging.queues import Queue
 from app.repositories.file_repository import FileRepository
 from app.repositories.file_content_repository import FileContentRepository
 
+from app.services.llm_service import LLMService
 from app.services.storage_service import StorageService
 from app.services.document_service import DocumentService
 
@@ -28,6 +29,7 @@ def create_document_service(db):
         file_content_repository=FileContentRepository(db),
         storage_service=StorageService(),
         vector_repository=VectorRepository(Qdrant()),
+        llm_service=LLMService(),
     )
 
 

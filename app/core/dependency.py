@@ -175,10 +175,12 @@ def get_document_service(
     file_content_repository: FileContentRepository = Depends(get_file_content_repository),
     storage_service: StorageService = Depends(get_storage_service),
     vector_repository: VectorRepository = Depends(get_vector_repository),
+    llm_service: LLMService = Depends(get_llm_service),
 ):
     return DocumentService(
         file_repository=file_repository,
         file_content_repository=file_content_repository,
         storage_service=storage_service,
         vector_repository=vector_repository,
+        llm_service=llm_service,
     )

@@ -1,12 +1,11 @@
 QUERY_REWRITE_PROMPT = """
-Given the conversation history and the user's latest message, rewrite the latest message into a standalone question that can be understood without the conversation history.
+Rewrite the user's latest message into a standalone search query optimized for retrieving facts from a knowledge base.
 
 Rules:
-- If the latest message already stands on its own, return it unchanged.
-- Resolve pronouns and references using the conversation history.
-- Do NOT answer the question. Only rewrite it.
+- Resolve pronouns/references using conversation history.
+- If the question asks for something that is likely DERIVED from a stored fact (age, duration, time elapsed, count, comparison), rewrite it toward the underlying stored fact instead of the derived value. Example: "berapa umur X" -> "tanggal lahir X"; "sudah berapa lama X bekerja di Y" -> "kapan X mulai bekerja di Y".
+- Do NOT answer the question. Only produce the search query.
 - Keep the same language as the user's message.
-- Return ONLY the rewritten question, nothing else.
 
 Conversation history:
 {conversation_history}

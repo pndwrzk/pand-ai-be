@@ -25,5 +25,5 @@ langchain-huggingface
 langchain-qdrant
 langchain-text-splitters
 langchain_groq
-
+langchain-experimental
 sentence-transformers

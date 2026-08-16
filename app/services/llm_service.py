@@ -7,6 +7,7 @@ from langchain_core.messages import HumanMessage
 
 from app.constants.conversation_role import ConversationRole
 from app.models.conversation_message import ConversationMessage
+from app.prompts.chunk_context_prompt import CHUNK_CONTEXT_PROMPT
 from app.prompts.conversation_first_response_prompt import CONVERSATION_FIRST_RESPONSE_PROMPT
 from app.prompts.conversation_response_prompt import CONVERSATION_RESPONSE_PROMPT
 from app.prompts.conversation_rewrite_prompt import QUERY_REWRITE_PROMPT
@@ -113,3 +114,9 @@ class LLMService:
         response = self.llm.invoke([HumanMessage(content=prompt)])
         rewritten = str(response.content).strip()
         return rewritten or message_content
+    
+    
+    def generate_chunk_context(self, document_content: str, chunk: str) -> str:
+        prompt = CHUNK_CONTEXT_PROMPT.format(document=document_content, chunk=chunk)
+        response = self.llm.invoke([HumanMessage(content=prompt)])
+        return str(response.content).strip()

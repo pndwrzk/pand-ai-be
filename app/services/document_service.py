@@ -11,6 +11,7 @@ from app.rag.splitter import Splitter
 
 from app.repositories.file_repository import FileRepository
 from app.repositories.file_content_repository import FileContentRepository
+from app.services.llm_service import LLMService
 from app.services.storage_service import StorageService
 from app.constants.vector_collections import VectorCollection
 
@@ -22,7 +23,8 @@ class DocumentService:
         file_repository: FileRepository,
         file_content_repository: FileContentRepository,
         storage_service: StorageService,
-        vector_repository : VectorRepository
+        vector_repository : VectorRepository,
+        llm_service: LLMService, 
     ):
 
         self.file_repository = file_repository
@@ -30,6 +32,7 @@ class DocumentService:
         self.storage_service = storage_service
         self.vector_repository=  vector_repository
         self.extractor = Extractor()
+        self.llm_service = llm_service
 
 
     def extract_document_contents(
@@ -165,19 +168,27 @@ class DocumentService:
             )
             return
 
-        documents = [
-            Document(   
-                page_content=chunk,
-                metadata={
-                    "file_id": file_content.file_id,
-                "file_content_id": file_content.id,
-                "file_key": file.key,
-                "page_number": file_content.page_number,
-                "chunk_number": i,
+        splitter = Splitter()
+        chunks = splitter.split(file_content.content)
+
+        documents = []
+        for i, chunk in enumerate(chunks):
+            context = self.llm_service.generate_chunk_context(file_content.content, chunk)
+            enriched_content = f"{context}\n\n{chunk}"
+
+            documents.append(
+                Document(
+                    page_content=enriched_content,     
+                    metadata={
+                        "file_id": file_content.file_id,
+                        "file_content_id": file_content.id,
+                        "file_key": file.key,
+                        "page_number": file_content.page_number,
+                        "chunk_number": i,
+                        "original_content": chunk,     
                     },
+                )
             )
-            for i, chunk in enumerate(chunks)
-        ]
 
         if documents:
             self.vector_repository.save(collection_name=VectorCollection.DOCUMENTS,documents=documents)

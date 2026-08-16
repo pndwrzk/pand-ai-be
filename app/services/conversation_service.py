@@ -31,11 +31,11 @@ class ConversationService:
         self.reranker = Reranker()
         self.storage_service = storage_service
 
-    def _search_contexts(self, query: str, limit: int = 5, score_threshold: float = 0.5):
+    def _search_contexts(self, query: str, limit: int = 5, score_threshold: float = 0.3):
         results = self.vector_repository.search(
             collection_name=VectorCollection.DOCUMENTS,
             query=query,
-            limit=20,
+            limit=40,
         )
         filtered_documents = [
             document for document, score in results if score >= score_threshold
