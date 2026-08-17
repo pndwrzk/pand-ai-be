@@ -10,4 +10,5 @@ class FileStatus(IntEnum):
     
 class FileContentStatus(IntEnum):
     UNSAVED = 0
-    SAVED = 1
+    PROCESS =1
+    SAVED = 2

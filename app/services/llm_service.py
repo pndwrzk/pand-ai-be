@@ -17,7 +17,7 @@ from app.core.config import settings
 
 
 class LLMService:
-    def __init__(self, model_name: str = "llama-3.1-8b-instant"):
+    def __init__(self, model_name: str = "openai/gpt-oss-20b"):
         self.llm = ChatGroq(
             model=model_name,
             temperature=0.3,
