@@ -4,6 +4,7 @@ from uuid import UUID
 from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
+from app.constants.entry_point import EntryPoint
 from app.constants.user_role import UserRole
 from app.constants.user_status import UserStatus
 from app.core.security import decode_access_token
@@ -18,10 +19,37 @@ bearer_scheme = HTTPBearer()
 def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> Generator[dict, None, None]:
+    """
+    Dependency untuk request dari sisi internal/dashboard
+    (token di-sign dengan JWT_SECRET_INTERNAL).
+    """
+
     token = credentials.credentials
 
     try:
-        payload = decode_access_token(token)
+        payload = decode_access_token(token, entry_point=EntryPoint.INTERNAL)
+    except Exception:
+        clear_current_user_id()
+        raise UnauthorizedException("Invalid token")
+
+    try:
+        yield payload
+    finally:
+        clear_current_user_id()
+
+
+def get_current_app_user(
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> Generator[dict, None, None]:
+    """
+    Dependency untuk request dari sisi app
+    (token di-sign dengan JWT_SECRET_APP).
+    """
+
+    token = credentials.credentials
+
+    try:
+        payload = decode_access_token(token, entry_point=EntryPoint.APP)
     except Exception:
         clear_current_user_id()
         raise UnauthorizedException("Invalid token")
@@ -47,9 +75,9 @@ def _get_user_repository() -> Generator[UserRepository, None, None]:
         next(db_gen, None)
 
 
-def get_current_active_user(
-    payload: dict = Depends(get_current_user),
-    repository: UserRepository = Depends(_get_user_repository),
+def _resolve_active_user(
+    payload: dict,
+    repository: UserRepository,
 ) -> User:
     """
     Mengambil data user yang sedang login secara utuh dari database
@@ -71,6 +99,20 @@ def get_current_active_user(
         raise UnauthorizedException("User is inactive")
 
     return user
+
+
+def get_current_active_user(
+    payload: dict = Depends(get_current_user),
+    repository: UserRepository = Depends(_get_user_repository),
+) -> User:
+    return _resolve_active_user(payload, repository)
+
+
+def get_current_active_app_user(
+    payload: dict = Depends(get_current_app_user),
+    repository: UserRepository = Depends(_get_user_repository),
+) -> User:
+    return _resolve_active_user(payload, repository)
 
 
 def require_superadmin(
