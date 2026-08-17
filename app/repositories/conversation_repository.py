@@ -81,6 +81,23 @@ class ConversationRepository:
     def get_conversation_messages(self, conversation_id: str):
         return self.db.query(ConversationMessage).filter(ConversationMessage.conversation_id == conversation_id).order_by(ConversationMessage.created_at.asc()).all()
     
+    def get_latest_messages(
+        self,
+        conversation_id: str,
+        limit: int = 6,
+    ):
+        messages = (
+            self.db.query(ConversationMessage)
+            .filter(
+                ConversationMessage.conversation_id == conversation_id
+            )
+            .order_by(ConversationMessage.created_at.desc())
+            .limit(limit)
+            .all()
+        )
+
+        return messages[::-1]
+    
     def update_conversation(self, conversation: Conversation):
         self.db.add(conversation)
         self.db.commit()

@@ -1,5 +1,7 @@
 from fastapi import HTTPException, status
 
+from app.constants.user_role import UserRole
+from app.constants.user_status import UserStatus
 from app.core.security import hash_password
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
@@ -31,6 +33,8 @@ class UserService:
             username=dto.username,
             full_name=dto.full_name,
             password=hash_password(dto.password),
+            Status=UserStatus.ACTIVE,
+            Role= UserRole.USER
         )
 
         return self.repository.create(user)

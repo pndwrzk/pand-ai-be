@@ -10,6 +10,8 @@ class UserCreate(BaseModel):
     username: str
     full_name: str
     password: str
+    Status : int
+    Role : int
 
 
 class UserUpdate(BaseModel):

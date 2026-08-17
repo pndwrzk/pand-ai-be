@@ -2,6 +2,7 @@ from typing import Optional
 
 from langchain_core.documents import Document
 from sentence_transformers import CrossEncoder
+import torch
 
 
 class Reranker:
@@ -34,7 +35,8 @@ class Reranker:
         assert self._model is not None
 
         pairs = [(query, doc.page_content) for doc in documents]
-        scores = self._model.predict(pairs)
+        raw_scores = self._model.predict(pairs)
+        scores = torch.sigmoid(torch.tensor(raw_scores)).tolist()   # normalisasi ke 0-1
 
         ranked = sorted(
             zip(documents, scores),

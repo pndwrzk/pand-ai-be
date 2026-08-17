@@ -77,20 +77,20 @@ class LLMService:
             message=message_content,
         )
         yield from self._stream_llm(prompt)
+        
 
     def generate_suggested_questions(
         self,
         message_content: str,
-        history: list[ConversationMessage],
+        response_message: str,
         contexts: list[Document],
     ) -> list[str]:
         prompt = SUGGESTED_QUESTIONS_PROMPT.format(
-            conversation_history=self._build_history_text(history),
-            context=self._build_context_text(contexts),
             message=message_content,
+            response=response_message,
+            context=self._build_context_text(contexts),
         )
-        
-      
+
         response = self.llm.invoke([HumanMessage(content=prompt)])
         content = response.content
 

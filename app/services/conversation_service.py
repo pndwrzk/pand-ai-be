@@ -129,20 +129,13 @@ class ConversationService:
         contexts: list[Document] = [doc for doc, score in reranked_contexts]
         sources = self._build_sources(reranked_contexts)
 
+     
         response_parts = []
         for chunk in self.llm_service.generate_response_stream(message_content, history, contexts):
             response_parts.append(chunk)
             yield chunk
 
         response_message = "".join(response_parts)
-        suggested_questions = []
-
-        if len(sources) > 0:
-            suggested_questions = self.llm_service.generate_suggested_questions(
-                message_content=message_content,
-                history=history,
-                contexts=contexts,
-            )
 
         self.conversation_repository.create_conversation_message(
             ConversationMessage(
@@ -151,6 +144,25 @@ class ConversationService:
                 role=ConversationRole.SYSTEM,
             )
         )
+
+     
+        yield {
+            "event": "sources",
+            "sources": sources,
+        }
+
+      
+       
+        suggested_questions = self.llm_service.generate_suggested_questions(
+                message_content=message_content,
+                response_message=response_message,
+                contexts=contexts,
+            )
+
+        yield {
+            "event": "suggested_questions",
+            "suggested_questions": suggested_questions,
+        }
 
         return {
             "conversation_id": conversation.id,
