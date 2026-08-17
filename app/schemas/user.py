@@ -1,8 +1,12 @@
+from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import EmailStr
+
+from app.constants.user_role import UserRole
+from app.constants.user_status import UserStatus
 
 
 class UserCreate(BaseModel):
@@ -10,12 +14,8 @@ class UserCreate(BaseModel):
     username: str
     full_name: str
     password: str
-    Status : int
-    Role : int
-
-
-class UserUpdate(BaseModel):
-    full_name: str
+    status: UserStatus = UserStatus.ACTIVE
+    role: UserRole = UserRole.USER
 
 
 class UserResponse(BaseModel):
@@ -23,6 +23,10 @@ class UserResponse(BaseModel):
     email: EmailStr
     username: str
     full_name: str
+    role: UserRole
+    status: UserStatus
+    created_at: datetime
+    updated_at: datetime
 
     model_config = ConfigDict(
         from_attributes=True

@@ -1,9 +1,13 @@
 from fastapi import HTTPException, status
 
+from app.constants.entry_point import EntryPoint
+from app.constants.user_role import UserRole
+from app.constants.user_status import UserStatus
 from app.core.security import (
     create_access_token,
     verify_password,
 )
+from app.exceptions.exceptions import ForbiddenException
 from app.repositories.user_repository import UserRepository
 from app.schemas.requests.login_request import LoginRequest
 from app.schemas.responses.login_response import LoginResponse
@@ -23,6 +27,20 @@ class AuthService:
             raise UnauthorizedException(
                 message="Invalid email or password"
             )
+            
+            
+        if user.status != UserStatus.ACTIVE:
+          raise UnauthorizedException(
+                message="User is inactive"
+           )
+
+        if entry_point == EntryPoint.INTERNAL and user.role not in (
+            UserRole.ADMIN,
+            UserRole.SUPERADMIN,
+       ):
+           raise ForbiddenException(
+               message="Only admin can access this login"
+           )
 
         if not verify_password(dto.password, user.password):
             raise UnauthorizedException(

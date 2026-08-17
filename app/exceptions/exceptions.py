@@ -32,6 +32,20 @@ class UnauthorizedException(AppException):
         )
 
 
+class ForbiddenException(AppException):
+
+    def __init__(
+        self,
+        message="Forbidden",
+        errors=None,
+    ):
+        super().__init__(
+            message,
+            status.HTTP_403_FORBIDDEN,
+            errors,
+        )
+
+
 class NotFoundException(AppException):
 
     def __init__(
