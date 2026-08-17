@@ -19,9 +19,6 @@ pids+=($!)
 python3 -m app.workers.document_ocr_worker &
 pids+=($!)
 
-python3 -m app.workers.content_vector_delete_worker &
-pids+=($!)
-
 python3 -m app.workers.conversation_title_generation_worker &
 pids+=($!)
 

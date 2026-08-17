@@ -136,10 +136,7 @@ class DocumentService:
             file_content_id
         )
         
-        file_content.status = FileContentStatus.PROCESS
-        self.file_content_repository.update(
-                    file_content
-        )
+        
 
         if file_content is None:
             print(

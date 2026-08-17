@@ -123,9 +123,21 @@ class FileService:
         type=file.type,
         size=file.size,
         status=file.status,
+        total_contents=len(file.contents or []),
         is_available_vector=bool(data_vector),
         contents=file.contents,
     )
+
+    def get_file_content_by_id(
+        self,
+        file_content_id: UUID,
+    ):
+        file_content = self.file_content_repository.find_by_id(file_content_id)
+
+        if file_content is None:
+            raise NotFoundException("File content not found")
+
+        return file_content
 
     def update_content(
         self,
@@ -177,17 +189,20 @@ class FileService:
                 "file_content_id": file_content_id,
             },
         )
+            file_content.status = FileContentStatus.PROCESS
         elif status == FileContentStatus.UNSAVED:
-            self.publisher.publish(
-            exchange=Exchange.FILE,
-            routing_key=RoutingKey.REMOVE_VECTOR_PROCESS,
-            message={
-                "file_content_id": file_content_id,
-            },
+            self.vector_repository.delete(
+            collection_name=VectorCollection.DOCUMENTS,
+            key="metadata.file_content_id",
+            value=file_content_id,
         )
-
-        file_content.status = status
+            file_content.status =  FileContentStatus.UNSAVED
+            
+        
         self.file_content_repository.update(file_content)
+        
+
+      
 
         return file_content
     

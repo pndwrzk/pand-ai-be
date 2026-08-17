@@ -65,6 +65,21 @@ def get_file_detail(
         ),
     )
 
+
+@router.get("/internal/files/content/{content_id}")
+def get_file_content_detail(
+    content_id: UUID,
+    service: FileService = Depends(get_file_service),
+):
+    file_content = service.get_file_content_by_id(
+        file_content_id=content_id,
+    )
+
+    return ApiResponse.success(
+        message="File content retrieved successfully",
+        data=FileContentResponse.model_validate(file_content),
+    )
+
 @router.patch("/internal/files/content/{file_content_id}")
 def update_file_content(
     file_content_id: UUID,

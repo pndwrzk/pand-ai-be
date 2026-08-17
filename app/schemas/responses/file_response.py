@@ -33,6 +33,16 @@ class FileContentResponse(BaseModel):
         from_attributes=True,
     )
 
+
+class FileContentSummaryResponse(BaseModel):
+    id: UUID
+    page_number: int | None = None
+
+    model_config = ConfigDict(
+        from_attributes=True,
+    )
+
+
 class FileWithFileContentResponse(BaseModel):
 
     id: UUID
@@ -43,7 +53,8 @@ class FileWithFileContentResponse(BaseModel):
     type: str
     size: int
     status: int
-    contents: list[FileContentResponse] = []
+    total_contents: int = 0
+    contents: list[FileContentSummaryResponse] = []
 
 
     model_config = {
@@ -60,8 +71,9 @@ class FileWithFileContentAndVectorInfoResponse(BaseModel):
     type: str
     size: int
     status: int
+    total_contents: int = 0
     is_available_vector: bool = False
-    contents: list[FileContentResponse] = []
+    contents: list[FileContentSummaryResponse] = []
 
     model_config = ConfigDict(
         from_attributes=True,
